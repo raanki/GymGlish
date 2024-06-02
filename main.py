@@ -8,133 +8,136 @@ In order to see the profiling, you need to add the option -s
 """
 
 
-def kmp_preprocess(word, len_word):
-    """
-    Pré-traite le mot pour construire le tableau des échecs.
-    """
-    lps = [0] * len_word
-    j = 0  # longueur du préfixe suffixe
 
-    # le 1er élément de lps est toujours 0
-    i = 1
-    while i < len_word:
-        if word[i] == word[j]:
-            j += 1
-            lps[i] = j
-            i += 1
-        else:
-            if j != 0:
-                j = lps[j - 1]
-            else:
-                lps[i] = 0
-                i += 1
+"""
+    👉 Version 2/2 - Algorithme de Knuth-Morris-Pratt
+    👉 o(m + n) => mais l'algorithme est plus lent. => ~ 0.700s
+"""
+# def count_occurrences_in_text(word, text):
+#     """
+#     Retourne une liste des indices de début des occurrences du mot passé en argument (insensible à la casse) dans le texte.
+#     """
+#
+#     def kmp_preprocess(word, len_word):
+#         """
+#         Pré-traite le mot pour construire le tableau des échecs.
+#         """
+#         lps = [0] * len_word  # Initialiser le tableau LPS
+#         j = 0  # Longueur du préfixe suffixe
+#
+#         i = 1
+#         while i < len_word:
+#             if word[i] == word[j]:
+#                 # Caractères correspondants
+#                 j += 1
+#                 lps[i] = j
+#                 i += 1
+#             else:
+#                 if j != 0:
+#                     # Utiliser la valeur LPS précédente
+#                     j = lps[j - 1]
+#                 else:
+#                     # Pas de correspondance
+#                     lps[i] = 0
+#                     i += 1
+#
+#         return lps
+#
+#     # Convertir le texte et le mot en minuscules
+#     text = text.lower()
+#     word = word.lower()
+#
+#     # Longueur du mot et du texte
+#     len_word = len(word)
+#     len_text = len(text)
+#
+#     # Prétraiter le mot pour obtenir le tableau LPS
+#     lps = kmp_preprocess(word, len_word)
+#
+#     # Initialiser les compteurs et le résultat
+#     result = 0
+#     i = 0  # index pour text
+#     j = 0  # index pour word
+#
+#     # Parcourir le texte
+#     while i < len_text:
+#         if word[j] == text[i]:
+#             # Caractère correspondant trouvé
+#             i += 1
+#             j += 1
+#
+#         if j == len_word:
+#             # Mot trouvé dans le texte
+#             if (i == j or not text[i - j - 1].isalnum()) and is_good(text, i - j, len_word, len_text):
+#                 result += 1
+#             j = lps[j - 1]  # Réinitialiser j en utilisant LPS
+#         elif i < len_text and word[j] != text[i]:
+#             # Caractère non correspondant
+#             if j != 0:
+#                 j = lps[j - 1]  # Réinitialiser j en utilisant LPS
+#             else:
+#                 i += 1  # Passer au caractère suivant du texte
+#
+#     return result
 
-    return lps
-
-
+"""
+    👉 Version 1/2 - Algorithme "naif"
+    👉 o(m * n) => L'algorithme est plus rapide. => ~ 0.46s
+"""
 def count_occurrences_in_text(word, text):
     """
-    Retourne une liste des indices de début des occurrences du mot passé en argument (insensible à la casse) dans le texte.
+    Return the number of occurrences of the passed word (case insensitive) in text
     """
-
-    def is_separator(char):
-        return not char.isalnum()
-
+    # Convertir le texte et le mot en minuscules
     text = text.lower()
     word = word.lower()
+
+    # Longueur du mot et du texte
     len_word = len(word)
     len_text = len(text)
-    lps = kmp_preprocess(word, len_word)
+
+    # Index maximum pour éviter les dépassements
+    len_max = len_text - len_word
+
+    # Initialiser le compteur de résultats
     result = 0
-    i = 0  # index pour text
-    j = 0  # index pour word
+    i = 0
 
-    while i < len_text:
-        if word[j] == text[i]:
-            i += 1
-            j += 1
+    while i <= len_max:
+        # Vérifier si le mot correspond à la sous-chaîne actuelle
+        if text[i:i + len_word] == word:
+            # Vérifier les conditions de début et de fin
+            if is_good(text, i, len_word, len_text):
+                result += 1
+                i += len_word  # Sauter le mot trouvé
+                continue
 
-        if j == len_word:
-            # On a trouvé une occurrence
-            if (i == j or is_separator(text[i - j - 1])) and (i == len_text or is_separator(text[i])):
-                if start_is_good(text, i - j) and end_is_good(text, i - j, len_word, len_text):
-                    result += 1
-            j = lps[j - 1]
-        elif i < len_text and word[j] != text[i]:
-            if j != 0:
-                j = lps[j - 1]
-            else:
-                i += 1
+        i += 1  # Avancer au caractère suivant
 
     return result
 
 
-def start_is_good(text, index):
-    excepted_quote = False
 
-    if index - 1 > 0 and text[index - 1].isalpha():
+
+def is_good(text, index, length_word, length_text):
+    # Vérification du début
+    if (index > 0 and text[index - 1].isalpha()) or \
+            (index > 1 and text[index - 1] == '\'' and text[index - 2].isalpha()) or \
+            (index > 0 and text[index - 1] == '\'' and (index <= 1 or text[index - 2] != '\'')):
         return False
 
-    if index - 2 > 0 and text[index - 1] is ['\''] and text[index - 2].isalpha():
-        return False
-
-    if index - 2 >= 0 and text[index - 1] == '\'' and text[index - 2] == '\'':
-        excepted_quote = True
-
-    if index - 1 > 1 and text[index - 1] == '\'' and not excepted_quote:
-        return False
-
-    return True
-
-
-def end_is_good(text, index, length_word, length_text):
-    excepted_quote = False
-
+    # Vérification si la fin du mot dépasse le texte
     if index + length_word >= length_text:
         return True
 
-    if text[index + length_word].isalpha() and text[index + length_word] != '?':
+    # Vérification du caractère suivant le mot
+    if (text[index + length_word].isalpha() and text[index + length_word] != '?') or \
+            (index + length_word < length_text and text[index + length_word] == '\'' and
+             (index + length_word + 1 >= length_text or text[index + length_word + 1] != '\'')):
         return False
 
-    if index + length_word + 1 < length_text and text[index + length_word] == '\'' and text[
-        index + length_word + 1] == '\'':
-        excepted_quote = True
-
-    if index + length_word < length_text and text[index + length_word] == '\'' and not excepted_quote:
-        return False
-
+    # Toutes les conditions sont satisfaites
     return True
-
-
-# def count_occurrences_in_text(word, text):
-#     """
-#     Return the number of occurrences of the passed word (case insensitive) in text
-#     """
-#     # TODO: your code goes here, but it's OK to add new functions or import modules if needed
-#     text = text.lower()
-#     word = word.lower()
-#     len_word = len(word)
-#     len_text = len(text)
-#     len_max = len_text - len_word
-#     result = 0
-#     i = 0
-#
-#     while i <= len_max:
-#
-#         # on toruve le mot
-#         if text[i:i + len_word] == word:
-#
-#             #  on check le début et la fin
-#             if start_is_good(text, i) and end_is_good(text, i, len_word, len_text):
-#                 result += 1
-#                 i += len_word
-#                 continue
-#
-#         i += 1
-#
-#     return result
-#
-#
 
 
 def test_count_occurrences_in_text():
