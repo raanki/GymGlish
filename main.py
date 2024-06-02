@@ -26,7 +26,7 @@ def count_occurrences_in_text(word, text):
         if text[i:i + len_word] == word:
 
             #  on check le début et la fin
-            if start_is_good(word, text, i) and end_is_good(word, text, i):
+            if start_is_good(text, i) and end_is_good(text, i, len_word, len_text):
                 result += 1
 
         i += 1
@@ -34,7 +34,7 @@ def count_occurrences_in_text(word, text):
     return result
 
 
-def start_is_good(word, text, index):
+def start_is_good(text, index):
     excepted_quote = False
 
     # check si la lettre avant le mot est alpha ?
@@ -51,12 +51,11 @@ def start_is_good(word, text, index):
     return True
 
 
-def end_is_good(word, text, index):
-    length_word = len(word)
-    excepted_quote = False;
+def end_is_good(text, index, length_word, length_text):
+    excepted_quote = False
 
     # si le mot est collé à la fin
-    if index + length_word >= len(text):
+    if index + length_word >= length_text:
         return True
 
     # si la lettre apres cest pas un espace/ ? / '
@@ -64,13 +63,13 @@ def end_is_good(word, text, index):
         return False
 
     # check si deux quote apres
-    if (index + length_word + 1 < len(text)
+    if (index + length_word + 1 < length_text
             and text[index + length_word] in ['\'']
             and text[index + length_word + 1] in ['\'']):
         excepted_quote = True
 
     #  si cest lettre apres cest '
-    if index + length_word < len(text) and text[index + length_word] in ['\''] and not excepted_quote:
+    if index + length_word < length_text and text[index + length_word] in ['\''] and not excepted_quote:
         return False
 
     return True
@@ -208,6 +207,7 @@ So, have a great day!
 Anonymously,
 Bob Carter
 """
+
 
 def doit():
     """
