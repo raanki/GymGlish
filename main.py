@@ -54,25 +54,20 @@ def start_is_good(text, index):
 def end_is_good(text, index, length_word, length_text):
     excepted_quote = False
 
-    # si le mot est collé à la fin
     if index + length_word >= length_text:
         return True
 
-    # si la lettre apres cest pas un espace/ ? / '
-    if text[index:index + length_word + 1].isalpha() or text[index:index + length_word + 1] in ['?']:
+    if text[index:index + length_word + 1].isalpha() or text[index:index + length_word + 1] == '?':
         return False
 
-    # check si deux quote apres
-    if (index + length_word + 1 < length_text
-            and text[index + length_word] in ['\'']
-            and text[index + length_word + 1] in ['\'']):
+    if index + length_word + 1 < length_text and text[index + length_word] == '\'' and text[index + length_word + 1] == '\'':
         excepted_quote = True
 
-    #  si cest lettre apres cest '
-    if index + length_word < length_text and text[index + length_word] in ['\''] and not excepted_quote:
+    if index + length_word < length_text and text[index + length_word] == '\'' and not excepted_quote:
         return False
 
     return True
+
 
 
 def test_count_occurrences_in_text():
