@@ -4,6 +4,26 @@ Pour le test technique sur le sujet : "Return the number of occurrences of the p
 
 ## 1°) 🚀
 
+
+### Algorithme naïf
+
+**Principe**
+
+L'algorithme naïf consiste à faire glisser le motif le long du texte. Au début, le motif se trouve aligné avec le début du texte. Par exemple, si l'on cherche la chaîne "longs des" dans le texte "les sanglots longs des violons de l'automne blessent mon cœur d'une langueur monotone", on considère l'alignement suivant :
+
+```sh
+"les sanglots longs des violons de l'automne blessent mon cœur d'une langueur monotone.longs des"
+```
+
+On compare caractère après caractère le motif et le texte. Le premier caractère est 'l'. Mais le deuxième caractère est différent. On fait alors glisser le motif d'une case vers la droite.
+
+On compare à partir du second caractère. Le caractère 'e' et 'l' sont différents. On continue donc à glisser le motif.
+
+Au continue jusqu'à ce que l'alignement coïncide :
+
+
+
+
 J'ai d'abord utilisé une première version native que j'avais déjà réalisée auparavant sur LeetCode, une plateforme d'exercices algorithmiques. Cette version utilise une boucle pour parcourir le texte et vérifier chaque sous-chaîne de la même longueur que le mot recherché. La complexité de cette méthode est O(m\*n). Cet algorithme s'est avéré au final rapide, avec un temps d'exécution d'environ 0,46 secondes aux tests.
 
 ## 2°) 🔍
