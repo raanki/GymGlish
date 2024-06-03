@@ -21,7 +21,7 @@ On compare à partir du second caractère. Le caractère 'e' et 'l' sont différ
 
 Au continue jusqu'à ce que l'alignement coïncide :
 
-
+![Illustration](illustration.png)
 
 
 J'ai d'abord utilisé une première version native que j'avais déjà réalisée auparavant sur LeetCode, une plateforme d'exercices algorithmiques. Cette version utilise une boucle pour parcourir le texte et vérifier chaque sous-chaîne de la même longueur que le mot recherché. La complexité de cette méthode est O(m\*n). Cet algorithme s'est avéré au final rapide, avec un temps d'exécution d'environ 0,46 secondes aux tests.
